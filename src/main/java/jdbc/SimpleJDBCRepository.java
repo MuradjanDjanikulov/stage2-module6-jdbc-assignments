@@ -19,17 +19,17 @@ public class SimpleJDBCRepository {
     private PreparedStatement ps = null;
     private Statement st = null;
 
-    private static final String createUserSQL = "INSERT INTO myusers (firstname, lastname, age) VALUES (?, ?, ?)";
-    private static final String updateUserSQL = "UPDATE myusers SET firstname = ?, lastname = ?, age = ? WHERE id = ?";
-    private static final String deleteUser = "DELETE FROM myusers WHERE id = ?";
-    private static final String findUserByIdSQL = "SELECT * FROM myusers WHERE id = ?";
-    private static final String findUserByNameSQL = "SELECT * FROM myusers WHERE firstname = ?";
-    private static final String findAllUserSQL = "SELECT * FROM myusers";
+    private static String create = "INSERT INTO myusers (firstname, lastname, age) VALUES (?, ?, ?)";
+    private static String update = "UPDATE myusers SET firstname = ?, lastname = ?, age = ? WHERE id = ?";
+    private static String delete = "DELETE FROM myusers WHERE id = ?";
+    private static String findById = "SELECT * FROM myusers WHERE id = ?";
+    private static String findByName = "SELECT * FROM myusers WHERE firstname = ?";
+    private static String findAll = "SELECT * FROM myusers";
 
     public Long createUser(User user) {
         Long result = null;
         try (Connection connection = CustomDataSource.getInstance().getConnection();
-             PreparedStatement ps = connection.prepareStatement(createUserSQL, Statement.RETURN_GENERATED_KEYS)) {
+             PreparedStatement ps = connection.prepareStatement(create, Statement.RETURN_GENERATED_KEYS)) {
             ps.setString(1, user.getFirstName());
             ps.setString(2, user.getLastName());
             ps.setInt(3, user.getAge());
@@ -48,7 +48,7 @@ public class SimpleJDBCRepository {
         User user = null;
         ResultSet rs;
         try (Connection connection = CustomDataSource.getInstance().getConnection();
-             PreparedStatement ps = connection.prepareStatement(findUserByIdSQL)) {
+             PreparedStatement ps = connection.prepareStatement(findById)) {
             ps.setLong(1, userId);
             rs = ps.executeQuery();
             if (!rs.next())
@@ -69,7 +69,7 @@ public class SimpleJDBCRepository {
         ResultSet rs = null;
         User user = null;
         try (Connection connection = CustomDataSource.getInstance().getConnection();
-             PreparedStatement ps = connection.prepareStatement(findUserByNameSQL)) {
+             PreparedStatement ps = connection.prepareStatement(findByName)) {
             ps.setString(1, userName);
             rs = ps.executeQuery();
             if (!rs.next())
@@ -92,7 +92,7 @@ public class SimpleJDBCRepository {
         ResultSet rs = null;
         try (Connection connection = CustomDataSource.getInstance().getConnection();
              Statement st = connection.createStatement()) {
-            rs = st.executeQuery(findAllUserSQL);
+            rs = st.executeQuery(findAll);
             users = new ArrayList<>();
             while (rs.next()) {
                 Long id = rs.getLong("id");
@@ -109,7 +109,7 @@ public class SimpleJDBCRepository {
 
     public User updateUser(User user) {
         try (Connection connection = CustomDataSource.getInstance().getConnection();
-             PreparedStatement ps = connection.prepareStatement(updateUserSQL)) {
+             PreparedStatement ps = connection.prepareStatement(update)) {
             ps.setString(1, user.getFirstName());
             ps.setString(2, user.getLastName());
             ps.setInt(3, user.getAge());
@@ -124,7 +124,7 @@ public class SimpleJDBCRepository {
 
     public void deleteUser(Long userId) {
         try (Connection connection = CustomDataSource.getInstance().getConnection();
-             PreparedStatement ps = connection.prepareStatement(deleteUser)) {
+             PreparedStatement ps = connection.prepareStatement(delete)) {
             ps.setLong(1, userId);
             if (ps.executeUpdate() == 0)
                 throw new SQLException("No such user exists");

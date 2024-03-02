@@ -43,16 +43,13 @@ public class CustomDataSource implements DataSource {
 
     private static Map<String, String> getProperties(String path, String... propName) {
         Map<String, String> mapProperties = null;
-        try(InputStream propStream = new FileInputStream(path)) {
+        try(InputStream ignored = new FileInputStream(path)) {
             Properties properties = new Properties();
             properties.load(CustomDataSource.class.getClassLoader().getResourceAsStream("app.properties"));
             mapProperties = new HashMap<>();
             for (String s : propName) {
                 mapProperties.put(s, properties.getProperty(s));
             }
-            System.out.println(mapProperties.toString());
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
         } catch (IOException e) {
             e.printStackTrace();
         }
